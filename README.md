@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💬 Real-Time Chat App
 
-## Getting Started
+A modern, real-time chat application with Telegram-inspired UI, built with Next.js, Socket.io, and Better Auth.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🔐 Secure email/password authentication with Better Auth
+- 💬 Real-time messaging using Socket.io
+- 📱 Multiple chat rooms (General, Tech Talk, Random)
+- 🧮 Built-in calculator (`/calc` command)
+- 🎨 Beautiful Telegram-inspired UI with Tailwind CSS
+- 📝 Persistent message history per room
+- 👥 User join notifications
+
+## 🚀 Quick Start
+
+1. **Install dependencies**
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+2. **Start the server**
+   ```bash
+   npm run dev
+   ```
+
+3. **Open browser**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+4. **Sign up and start chatting!**
+
+## 📖 Usage
+
+### Messaging
+- Type and press **Enter** to send
+- **Shift + Enter** for new line
+
+### Calculator
+Use `/calc` to perform calculations:
+```
+/calc 2 + 2
+/calc sqrt(16) * 5
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Switching Rooms
+Click any room in the sidebar to switch channels.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js 16 + React 19
+- TypeScript 5
+- Socket.io 4
+- Better Auth + SQLite
+- Tailwind CSS 4
+- Math.js
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/          - Next.js pages and API routes
+component/    - React components
+lib/          - Auth configuration
+server.ts     - Socket.io server
+types.ts      - TypeScript types
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 UI Highlights
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Telegram-style message bubbles
+- User avatars with initials
+- Room sidebar with active state
+- Modern input with keyboard shortcuts
+- Auto-scrolling chat window
 
-## Deploy on Vercel
+## 🔧 Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Add New Rooms
+Edit `app/page.tsx`:
+```typescript
+const rooms = ["General", "Tech Talk", "Random", "New Room"];
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Change Port
+Update `server.ts`, `.env`, and socket connection in `app/page.tsx`
+
+## 🐛 Troubleshooting
+
+**Messages not sending?**
+- Check you're signed in
+- Restart the server
+- Check browser console
+
+**Database issues?**
+- Delete `db.sqlite` and restart
+
+## 📝 License
+
+MIT
+
+---
+
+Built with ❤️ - Enjoy chatting! 🎉
