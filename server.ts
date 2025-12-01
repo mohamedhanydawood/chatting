@@ -110,6 +110,22 @@ app.prepare().then(() => {
       console.log(`DM sent from ${msg.from} to ${toUser}`);
     });
 
+    socket.on("load_dm_history", async ({ dmRoomId }) => {
+      // Fetch DM history from database
+      const dbMessages = await getMessagesByRoom(dmRoomId);
+      const messages = dbMessages.map(msg => ({
+        from: msg.from_user,
+        text: msg.text,
+        ts: msg.timestamp,
+        roomId: msg.room_id
+      }));
+      
+      // Send DM history to the requesting user
+      socket.emit("room_history", { roomId: dmRoomId, messages });
+      
+      console.log(`Loaded DM history for ${dmRoomId}: ${messages.length} messages`);
+    });
+
     socket.on("calc", async ({ expr, roomId }) => {
       let result;
       try {

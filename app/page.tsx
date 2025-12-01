@@ -73,9 +73,8 @@ export default function Home() {
       if (rooms.includes(roomId)) {
         socketRef.current.emit("join_room", { roomId, user: userName });
       } else {
-        // For DMs, just load history if available
-        const dmMessages = messagesMap[roomId] || [];
-        setMessagesMap((prev) => ({ ...prev, [roomId]: dmMessages }));
+        // For DMs, load history from database
+        socketRef.current.emit("load_dm_history", { dmRoomId: roomId });
       }
     }
   };
