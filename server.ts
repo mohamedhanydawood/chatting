@@ -1,8 +1,10 @@
 // server.ts
+import 'dotenv/config';
 import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";
 import * as math from "mathjs";
+import { saveMessage, getMessagesByRoom } from "./lib/supabase.ts";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -20,7 +22,7 @@ interface OnlineUser {
   username: string;
 }
 
-const messages: Record<string, Message[]> = {};
+// Keep online users in memory (doesn't need persistence)
 const onlineUsers: Map<string, OnlineUser> = new Map(); // socketId -> user info
 const userSockets: Map<string, string> = new Map(); // username -> socketId
 
@@ -45,27 +47,40 @@ app.prepare().then(() => {
       console.log(`User registered: ${username}`);
     });
 
-    socket.on("join_room", ({ roomId, user }) => {
+    socket.on("join_room", async ({ roomId, user }) => {
       socket.join(roomId);
-      if (!messages[roomId]) messages[roomId] = [];
+      
+      // Fetch room history from database
+      const dbMessages = await getMessagesByRoom(roomId);
+      const messages = dbMessages.map(msg => ({
+        from: msg.from_user,
+        text: msg.text,
+        ts: msg.timestamp,
+        roomId: msg.room_id
+      }));
       
       // Send room history to the joining user
-      socket.emit("room_history", { roomId, messages: messages[roomId] });
+      socket.emit("room_history", { roomId, messages });
       
       // Notify others in the room
-      socket.to(roomId).emit("message", {
+      const systemMsg = {
         from: "System",
         text: `${user} joined the room`,
         ts: Date.now(),
         roomId
-      });
+      };
+      
+      // Save system message to database
+      await saveMessage(roomId, "System", systemMsg.text, false);
+      
+      socket.to(roomId).emit("message", systemMsg);
     });
 
-    socket.on("send_message", ({ roomId, msg }) => {
+    socket.on("send_message", async ({ roomId, msg }) => {
       const message = { ...msg, roomId };
       
-      if (!messages[roomId]) messages[roomId] = [];
-      messages[roomId].push(message);
+      // Save to database
+      await saveMessage(roomId, msg.from, msg.text, false);
       
       // Broadcast to all users in the room including sender
       io.to(roomId).emit("message", message);
@@ -73,12 +88,12 @@ app.prepare().then(() => {
       console.log(`Message sent to ${roomId}:`, message);
     });
 
-    socket.on("send_dm", ({ toUser, msg }) => {
+    socket.on("send_dm", async ({ toUser, msg }) => {
       const dmRoomId = [msg.from, toUser].sort().join("_dm_");
       const message = { ...msg, roomId: dmRoomId };
       
-      if (!messages[dmRoomId]) messages[dmRoomId] = [];
-      messages[dmRoomId].push(message);
+      // Save to database
+      await saveMessage(dmRoomId, msg.from, msg.text, true);
       
       const recipientSocketId = userSockets.get(toUser);
       
@@ -93,7 +108,7 @@ app.prepare().then(() => {
       console.log(`DM sent from ${msg.from} to ${toUser}`);
     });
 
-    socket.on("calc", ({ expr, roomId }) => {
+    socket.on("calc", async ({ expr, roomId }) => {
       let result;
       try {
         result = math.evaluate(expr);
@@ -107,8 +122,8 @@ app.prepare().then(() => {
         roomId
       };
       
-      if (!messages[roomId]) messages[roomId] = [];
-      messages[roomId].push(msg);
+      // Save to database
+      await saveMessage(roomId, "Calculator", msg.text, false);
       
       io.to(roomId).emit("message", msg);
     });
