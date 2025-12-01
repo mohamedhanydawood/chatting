@@ -4,7 +4,7 @@ import { createServer } from "http";
 import nextLib from "next";
 import { Server } from "socket.io";
 import * as math from "mathjs";
-import { saveMessage, getMessagesByRoom } from "./lib/supabase.ts";
+import { saveMessage, getMessagesByRoom } from "./lib/supabase.js";
 
 const dev = process.env.NODE_ENV !== "production";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
