@@ -17,7 +17,12 @@ export default function Home() {
     if (!isLoaded) return;
     if (!user) return;
 
-    const s = io("http://localhost:3000");
+    // Use dynamic URL: localhost in dev, production URL in prod
+    const socketUrl = typeof window !== 'undefined' 
+      ? (process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:3000')
+      : 'http://localhost:3000';
+    
+    const s = io(socketUrl);
     socketRef.current = s;
 
     const userName = user.fullName || user.firstName || user.emailAddresses[0]?.emailAddress || "User";

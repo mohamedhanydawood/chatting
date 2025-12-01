@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "ts-node server.ts",
-    "build": "next build",
-    "start": "NODE_ENV=production ts-node server.ts",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "start": "node dist/server.js",
     "lint": "eslint",
     "init-db": "ts-node scripts/init-db.ts"
   },

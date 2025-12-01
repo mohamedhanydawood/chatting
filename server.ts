@@ -1,12 +1,14 @@
 // server.ts
 import 'dotenv/config';
 import { createServer } from "http";
-import next from "next";
+import nextLib from "next";
 import { Server } from "socket.io";
 import * as math from "mathjs";
 import { saveMessage, getMessagesByRoom } from "./lib/supabase.ts";
 
 const dev = process.env.NODE_ENV !== "production";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const next = nextLib as unknown as (options: { dev: boolean }) => any;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
@@ -144,6 +146,6 @@ app.prepare().then(() => {
     });
   });
 
-  const PORT = 3000;
-  server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+  const PORT = parseInt(process.env.PORT || "3000", 10);
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
