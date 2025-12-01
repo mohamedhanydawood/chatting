@@ -22,7 +22,7 @@ const CalcButton = ({
     onClick={onClick}
     className={`
       ${double ? 'col-span-2' : ''} 
-      h-16 rounded-full font-light text-2xl transition-all active:brightness-90
+      h-14 sm:h-16 rounded-full font-light text-xl sm:text-2xl transition-all active:brightness-90
       ${className}
     `}
   >
@@ -97,23 +97,23 @@ export default function Calculator({ isOpen, onClose, onSend }: CalculatorProps)
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div 
-        className="bg-black rounded-3xl p-4 shadow-2xl w-80" 
+        className="bg-black rounded-3xl p-3 sm:p-4 shadow-2xl w-full max-w-xs sm:w-80" 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Display */}
-        <div className="text-white text-right mb-2 px-4">
-          <div className="text-sm text-gray-400 h-6 overflow-hidden">
+        <div className="text-white text-right mb-2 px-2 sm:px-4">
+          <div className="text-xs sm:text-sm text-gray-400 h-5 sm:h-6 overflow-hidden">
             {expression}
           </div>
-          <div className="text-6xl font-light overflow-hidden text-ellipsis">
+          <div className="text-4xl sm:text-6xl font-light overflow-hidden text-ellipsis">
             {display.length > 9 ? display.slice(0, 9) : display}
           </div>
         </div>
 
         {/* Buttons */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {/* Row 1 */}
           <CalcButton onClick={handleClear} className="bg-gray-400 text-black">
             AC
@@ -185,7 +185,7 @@ export default function Calculator({ isOpen, onClose, onSend }: CalculatorProps)
         {/* Send Button */}
         <button
           onClick={handleSendToChat}
-          className="w-full mt-3 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-full transition shadow-lg"
+          className="w-full mt-2 sm:mt-3 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 sm:py-3 rounded-full transition shadow-lg text-sm sm:text-base"
         >
           Send to Chat
         </button>

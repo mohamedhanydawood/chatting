@@ -28,7 +28,7 @@ export default function ChatSidebar({
     .filter(u => u !== user && u.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+    <div className="w-72 sm:w-80 bg-white border-r border-gray-200 flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 bg-linear-to-r from-blue-500 to-indigo-600">
         <div className="flex items-center justify-between">
