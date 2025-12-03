@@ -4,7 +4,11 @@ import { createServer } from "http";
 import nextLib from "next";
 import { Server } from "socket.io";
 import * as math from "mathjs";
-import { saveMessage, getMessagesByRoom } from "./lib/supabase.js";
+import {
+  saveMessage,
+  getMessagesByRoom,
+  testSupabaseConnection,
+} from "./lib/supabase.js";
 
 const dev = process.env.NODE_ENV !== "production";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,7 +32,18 @@ interface OnlineUser {
 const onlineUsers: Map<string, OnlineUser> = new Map(); // socketId -> user info
 const userSockets: Map<string, string> = new Map(); // username -> socketId
 
-app.prepare().then(() => {
+app.prepare().then(async () => {
+  // Test Supabase connection on startup
+  console.log("Testing Supabase connection...");
+  const connectionTest = await testSupabaseConnection();
+  if (connectionTest.success) {
+    console.log("✓", connectionTest.message);
+  } else {
+    console.error("✗", connectionTest.message);
+    console.error(
+      "Please check your SUPABASE_URL and SUPABASE_ANON_KEY in .env"
+    );
+  }
   const server = createServer((req, res) => handle(req, res));
 
   const io = new Server(server, {
@@ -80,7 +95,7 @@ app.prepare().then(() => {
 
     socket.on("send_message", async ({ roomId, msg }) => {
       const message = { ...msg, roomId };
-
+      await testSupabaseConnection();
       // Save to database
       await saveMessage(roomId, msg.from, msg.text, false);
 
