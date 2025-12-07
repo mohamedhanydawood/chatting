@@ -36,7 +36,8 @@ export default function ChatWindow({ messages, currentUser }: ChatWindowProps) {
           <>
             {messages.map((msg, i) => {
               const isCurrentUser = msg.from === currentUser;
-              const isSystem = msg.from === "System" || msg.from === "Calculator";
+              const isSystem = msg.from === "System";
+              const isCalculatorResult = msg.text.startsWith("equation");
               
               if (isSystem) {
                 return (
@@ -58,13 +59,17 @@ export default function ChatWindow({ messages, currentUser }: ChatWindowProps) {
                     )}
                     <div className={`
                       rounded-2xl px-3 sm:px-4 py-2 shadow-sm text-sm sm:text-base
-                      ${isCurrentUser 
-                        ? 'bg-blue-500 text-white rounded-br-none' 
-                        : 'bg-white text-gray-800 rounded-bl-none'
+                      ${isCalculatorResult
+                        ? isCurrentUser
+                          ? 'bg-linear-to-br from-green-500 to-emerald-600 text-white rounded-br-none border-2 border-green-400'
+                          : 'bg-linear-to-br from-green-50 to-emerald-50 text-gray-800 rounded-bl-none border-2 border-green-300'
+                        : isCurrentUser 
+                          ? 'bg-blue-500 text-white rounded-br-none' 
+                          : 'bg-white text-gray-800 rounded-bl-none'
                       }
                     `}>
-                      <p className="wrap-break-word">{msg.text}</p>
-                      <div className={`text-xs mt-1 ${isCurrentUser ? 'text-blue-100' : 'text-gray-500'}`}>
+                      <p className="wrap-break-word font-mono">{msg.text}</p>
+                      <div className={`text-xs mt-1 ${isCalculatorResult ? (isCurrentUser ? 'text-green-100' : 'text-green-700') : (isCurrentUser ? 'text-blue-100' : 'text-gray-500')}`}>
                         {formatTime(msg.ts)}
                       </div>
                     </div>

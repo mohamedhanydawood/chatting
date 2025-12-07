@@ -71,6 +71,11 @@ export default function ChatRoom({
     }
   };
 
+  const handleCalculate = (expression: string) => {
+    // Send calculation request to server
+    socketRef.current?.emit("calc", { expr: expression, roomId: currentRoom, user });
+  };
+
   const handleSignOut = () => {
     signOut();
   };
@@ -140,7 +145,7 @@ export default function ChatRoom({
           </div>
         </div>
         <ChatWindow messages={messagesMap[currentRoom] || []} currentUser={user} />
-        <ChatInput onSend={handleSend} />
+        <ChatInput onSend={handleSend} onCalculate={handleCalculate} />
       </div>
     </div>
   );

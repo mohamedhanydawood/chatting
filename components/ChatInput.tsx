@@ -4,9 +4,10 @@ import Calculator from "./Calculator";
 
 interface ChatInputProps {
   onSend: (msg: string) => void;
+  onCalculate: (expression: string) => void;
 }
 
-export default function ChatInput({ onSend }: ChatInputProps) {
+export default function ChatInput({ onSend, onCalculate }: ChatInputProps) {
   const [input, setInput] = useState("");
   const [showCalculator, setShowCalculator] = useState(false);
 
@@ -68,7 +69,7 @@ export default function ChatInput({ onSend }: ChatInputProps) {
       <Calculator 
         isOpen={showCalculator}
         onClose={() => setShowCalculator(false)}
-        onSend={onSend}
+        onCalculate={onCalculate}
       />
     </>
   );

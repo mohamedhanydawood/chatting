@@ -4,17 +4,17 @@ import { useState } from "react";
 interface CalculatorProps {
   isOpen: boolean;
   onClose: () => void;
-  onSend: (text: string) => void;
+  onCalculate: (expression: string) => void;
 }
 
-const CalcButton = ({ 
-  children, 
-  onClick, 
+const CalcButton = ({
+  children,
+  onClick,
   className = "",
-  double = false 
-}: { 
-  children: React.ReactNode; 
-  onClick: () => void; 
+  double = false
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
   className?: string;
   double?: boolean;
 }) => (
@@ -30,7 +30,7 @@ const CalcButton = ({
   </button>
 );
 
-export default function Calculator({ isOpen, onClose, onSend }: CalculatorProps) {
+export default function Calculator({ isOpen, onClose, onCalculate }: CalculatorProps) {
   const [display, setDisplay] = useState("0");
   const [expression, setExpression] = useState("");
   const [isNewNumber, setIsNewNumber] = useState(true);
@@ -57,25 +57,19 @@ export default function Calculator({ isOpen, onClose, onSend }: CalculatorProps)
     setIsNewNumber(true);
   };
 
-  const handleEquals = () => {
-    try {
-      const fullExpression = expression + display;
-      // Safe calculation without eval
-      const calcExpression = fullExpression.replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-");
-      const result = Function('"use strict"; return (' + calcExpression + ')')();
-      const resultStr = result.toString();
-      setDisplay(resultStr);
-      setExpression("");
-      setIsNewNumber(true);
-    } catch {
-      setDisplay("Error");
-      setExpression("");
-      setIsNewNumber(true);
-    }
-  };
-
   const handleSendToChat = () => {
-    onSend(display);
+    // Build the complete expression
+    const fullExpression = expression ? expression + display : display;
+    // Convert calculator symbols to math symbols
+    const mathExpression = fullExpression.replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-");
+
+    // Send to server for calculation
+    onCalculate(mathExpression);
+
+    // Reset calculator and close
+    setDisplay("0");
+    setExpression("");
+    setIsNewNumber(true);
     onClose();
   };
 
@@ -98,8 +92,8 @@ export default function Calculator({ isOpen, onClose, onSend }: CalculatorProps)
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div 
-        className="bg-black rounded-3xl p-3 sm:p-4 shadow-2xl w-full max-w-xs sm:w-80" 
+      <div
+        className="bg-black rounded-3xl p-3 sm:p-4 shadow-2xl w-full max-w-xs sm:w-80"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Display */}
@@ -177,18 +171,17 @@ export default function Calculator({ isOpen, onClose, onSend }: CalculatorProps)
           <CalcButton onClick={handleDecimal} className="bg-gray-700 text-white">
             .
           </CalcButton>
-          <CalcButton onClick={handleEquals} className="bg-orange-500 text-white">
-            =
-          </CalcButton>
+
+          <button
+            onClick={handleSendToChat}
+            className="bg-blue-500 text-white rounded-full"
+          >
+            Calc
+          </button>
         </div>
 
         {/* Send Button */}
-        <button
-          onClick={handleSendToChat}
-          className="w-full mt-2 sm:mt-3 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 sm:py-3 rounded-full transition shadow-lg text-sm sm:text-base"
-        >
-          Send to Chat
-        </button>
+
       </div>
     </div>
   );

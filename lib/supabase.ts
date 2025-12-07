@@ -83,7 +83,7 @@ export async function saveMessage(
 
 export async function getMessagesByRoom(
   roomId: string,
-  limit: number = 100
+  limit: number = 50000
 ): Promise<DatabaseMessage[]> {
   const { data, error } = await supabase
     .from("messages")

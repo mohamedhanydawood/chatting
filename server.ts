@@ -31,6 +31,7 @@ interface OnlineUser {
 // Keep online users in memory (doesn't need persistence)
 const onlineUsers: Map<string, OnlineUser> = new Map(); // socketId -> user info
 const userSockets: Map<string, string> = new Map(); // username -> socketId
+const socketRooms: Map<string, string> = new Map(); // socketId -> current roomId
 
 app.prepare().then(async () => {
   // Test Supabase connection on startup
@@ -65,10 +66,24 @@ app.prepare().then(async () => {
     });
 
     socket.on("join_room", async ({ roomId, user }) => {
+      console.log(`🚪 [SERVER] User ${user} (${socket.id}) joining room: ${roomId}`);
+      
+      // Leave previous room if any
+      const previousRoom = socketRooms.get(socket.id);
+      if (previousRoom) {
+        console.log(`🚶 [SERVER] User leaving previous room: ${previousRoom}`);
+        socket.leave(previousRoom);
+      }
+      
+      // Join new room
       socket.join(roomId);
+      socketRooms.set(socket.id, roomId);
+      console.log(`✅ [SERVER] User joined room: ${roomId}`);
 
       // Fetch room history from database
+      console.log(`📚 [SERVER] Fetching history for room: ${roomId}`);
       const dbMessages = await getMessagesByRoom(roomId);
+      console.log(`📚 [SERVER] Found ${dbMessages.length} messages in database for ${roomId}`);
       const messages = dbMessages.map((msg) => ({
         from: msg.from_user,
         text: msg.text,
@@ -77,6 +92,7 @@ app.prepare().then(async () => {
       }));
 
       // Send room history to the joining user
+      console.log(`📤 [SERVER] Sending ${messages.length} messages to user for room ${roomId}`);
       socket.emit("room_history", { roomId, messages });
 
       // Notify others in the room
@@ -94,15 +110,19 @@ app.prepare().then(async () => {
     });
 
     socket.on("send_message", async ({ roomId, msg }) => {
+      console.log(`📨 [SERVER] Received message for room ${roomId} from ${msg.from}`);
       const message = { ...msg, roomId };
-      await testSupabaseConnection();
+      
       // Save to database
-      await saveMessage(roomId, msg.from, msg.text, false);
+      console.log(`💾 [SERVER] Saving message to database...`);
+      const saved = await saveMessage(roomId, msg.from, msg.text, false);
+      console.log(`💾 [SERVER] Message saved:`, saved ? 'SUCCESS' : 'FAILED');
 
       // Broadcast to all users in the room including sender
+      console.log(`📡 [SERVER] Broadcasting message to room: ${roomId}`);
       io.to(roomId).emit("message", message);
 
-      console.log(`Message sent to ${roomId}:`, message);
+      console.log(`✅ [SERVER] Message sent to ${roomId}:`, message);
     });
 
     socket.on("send_dm", async ({ toUser, msg }) => {
@@ -143,7 +163,7 @@ app.prepare().then(async () => {
       );
     });
 
-    socket.on("calc", async ({ expr, roomId }) => {
+    socket.on("calc", async ({ expr, roomId, user }) => {
       let result;
       try {
         result = math.evaluate(expr);
@@ -151,14 +171,14 @@ app.prepare().then(async () => {
         result = "Error";
       }
       const msg: Message = {
-        from: "Calculator",
-        text: `${expr} = ${result}`,
+        from: user,
+        text: `equation ${expr} = ${result}`,
         ts: Date.now(),
         roomId,
       };
 
       // Save to database
-      await saveMessage(roomId, "Calculator", msg.text, false);
+      await saveMessage(roomId, user, msg.text, false);
 
       io.to(roomId).emit("message", msg);
     });
@@ -168,6 +188,7 @@ app.prepare().then(async () => {
       if (user) {
         userSockets.delete(user.username);
         onlineUsers.delete(socket.id);
+        socketRooms.delete(socket.id);
 
         // Broadcast updated user list
         const userList = Array.from(onlineUsers.values()).map(
