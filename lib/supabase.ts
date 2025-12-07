@@ -9,37 +9,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Test Supabase connection
-export async function testSupabaseConnection(): Promise<{
-  success: boolean;
-  message: string;
-}> {
-  console.log("Testing Supabase connection...");
-  try {
-    const { error } = await supabase.from("messages").select("id").limit(1);
-
-    if (error) {
-      console.error("Supabase connection failed:", error);
-      return {
-        success: false,
-        message: `Supabase connection failed: ${error.message}`,
-      };
-    }
-    console.log("Supabase connection successful.");
-    return {
-      success: true,
-      message: "Supabase connected successfully!",
-    };
-  } catch (err) {
-    return {
-      success: false,
-      message: `Connection error: ${
-        err instanceof Error ? err.message : "Unknown error"
-      }`,
-    };
-  }
-}
-
 // Database types
 export interface DatabaseMessage {
   id: string;
@@ -58,9 +27,6 @@ export async function saveMessage(
   text: string,
   isDm: boolean = false
 ): Promise<DatabaseMessage | null> {
-  const res = await testSupabaseConnection();
-  console.log("Supabase connection test result:", res);
-  console.log("alooooooooooooooooooooooooooooooo");
   const { data, error } = await supabase
     .from("messages")
     .insert({

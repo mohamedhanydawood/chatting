@@ -5,7 +5,7 @@ import ChatRoom from "@/components/ChatRoom";
 import { Message } from "@/types";
 import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
 
-const rooms = ["General", "Graduation project" , "Tech Talk", "Random", "Project Alpha", "Project Beta"];
+const rooms = ["General", "Graduation project", "Tech Talk", "Random", "Project Alpha", "Project Beta"];
 
 export default function Home() {
   const socketRef = useRef<Socket | undefined>(undefined);
@@ -18,10 +18,10 @@ export default function Home() {
     if (!user) return;
 
     // Use dynamic URL: localhost in dev, production URL in prod
-    const socketUrl = typeof window !== 'undefined' 
+    const socketUrl = typeof window !== 'undefined'
       ? (process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:3000')
       : 'http://localhost:3000';
-    
+
     const s = io(socketUrl);
     socketRef.current = s;
 
@@ -30,19 +30,15 @@ export default function Home() {
     // Set up listeners FIRST before emitting any events
     // Listen for messages
     s.on("message", (msg: Message) => {
-      console.log(`📨 [CLIENT] Received message:`, msg);
       setMessagesMap((prev) => {
         const room = msg.roomId || rooms[0];
         const newMsgs = prev[room] ? [...prev[room], msg] : [msg];
-        console.log(`📨 [CLIENT] Updated ${room} with ${newMsgs.length} total messages`);
         return { ...prev, [room]: newMsgs };
       });
     });
 
     // Listen for room history
     s.on("room_history", ({ roomId, messages }: { roomId: string; messages: Message[] }) => {
-      console.log(`📥 [CLIENT] Received room_history for ${roomId}:`, messages.length, "messages");
-      console.log(`📥 [CLIENT] Messages:`, messages);
       setMessagesMap((prev) => ({ ...prev, [roomId]: messages }));
     });
 
@@ -52,9 +48,7 @@ export default function Home() {
     });
 
     // THEN register user and join default room
-    console.log(`🔌 [CLIENT] Registering user: ${userName}`);
     s.emit("register_user", { username: userName });
-    console.log(`🚪 [CLIENT] Joining default room: ${rooms[0]}`);
     s.emit("join_room", { roomId: rooms[0], user: userName });
 
     return () => {
@@ -63,7 +57,7 @@ export default function Home() {
   }, [user, isLoaded]);
 
   const sendMessage = (roomId: string, msg: Message) => {
-    console.log(`📤 [CLIENT] Sending message to ${roomId}:`, msg);
+
     socketRef.current?.emit("send_message", { roomId, msg });
   };
 
@@ -74,14 +68,13 @@ export default function Home() {
   const switchRoom = (roomId: string) => {
     if (socketRef.current && user) {
       const userName = user.fullName || user.firstName || user.emailAddresses[0]?.emailAddress || "User";
-      console.log(`🔄 [CLIENT] Switching to room: ${roomId}`);
-      
+
       // Only emit join_room for actual rooms (not DMs)
       if (rooms.includes(roomId)) {
-        console.log(`🚪 [CLIENT] Emitting join_room for: ${roomId}`);
+
         socketRef.current.emit("join_room", { roomId, user: userName });
       } else {
-        console.log(`💬 [CLIENT] Loading DM history for: ${roomId}`);
+
         // For DMs, load history from database
         socketRef.current.emit("load_dm_history", { dmRoomId: roomId });
       }
