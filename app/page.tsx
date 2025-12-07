@@ -5,7 +5,7 @@ import ChatRoom from "@/components/ChatRoom";
 import { Message } from "@/types";
 import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
 
-const rooms = ["General", "Tech Talk", "Random"];
+const rooms = ["General", "Graduation project" , "Tech Talk", "Random", "Project Alpha", "Project Beta"];
 
 export default function Home() {
   const socketRef = useRef<Socket | undefined>(undefined);

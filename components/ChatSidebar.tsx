@@ -27,6 +27,9 @@ export default function ChatSidebar({
   const filteredUsers = onlineUsers
     .filter(u => u !== user && u.toLowerCase().includes(searchQuery.toLowerCase()));
 
+  const filteredRooms = rooms
+    .filter(room => room.toLowerCase().includes(searchQuery.toLowerCase()));
+
   return (
     <div className="w-72 sm:w-80 bg-white border-r border-gray-200 flex flex-col h-full">
       {/* Header */}
@@ -103,7 +106,12 @@ export default function ChatSidebar({
         {activeTab === "channels" ? (
           <div className="px-3 py-2">
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Channels</h4>
-            {rooms.map((room) => (
+            {filteredRooms.length === 0 && searchQuery && (
+              <div className="text-center py-8 text-gray-500 text-sm">
+                No channels found
+              </div>
+            )}
+            {filteredRooms.map((room) => (
               <div
                 key={room}
                 onClick={() => onSelectRoom(room)}

@@ -47,11 +47,6 @@ export default function ChatInput({ onSend }: ChatInputProps) {
               className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 md:pr-12 bg-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm md:text-base"
               style={{ maxHeight: '120px' }}
             />
-            <button className="absolute right-2 bottom-2 p-1 text-gray-400 hover:text-gray-600">
-              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
           </div>
 
           <button
