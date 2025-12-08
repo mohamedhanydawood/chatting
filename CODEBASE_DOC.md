@@ -19,7 +19,6 @@ This document provides clear, line-by-line explanations for all major files in t
 | components/Chat.tsx           | tahoun      |
 | lib/supabase.ts               | shawky      |
 | app/page.tsx                  | rageh       |
-|       |
 | server.ts                     | shawky      |
 | Documentation & Code Quality  | tahoun      |
 

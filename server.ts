@@ -53,13 +53,13 @@ app.prepare().then(async () => {
     });
 
     socket.on("join_room", async ({ roomId, user }) => {
-      
+
       // Leave previous room if any
       const previousRoom = socketRooms.get(socket.id);
       if (previousRoom) {
         socket.leave(previousRoom);
       }
-      
+
       // Join new room
       socket.join(roomId);
       socketRooms.set(socket.id, roomId);
@@ -92,8 +92,8 @@ app.prepare().then(async () => {
 
     socket.on("send_message", async ({ roomId, msg }) => {
       const message = { ...msg, roomId };
-      
 
+      await saveMessage(roomId, msg.from, msg.text, false);
       // Broadcast to all users in the room including sender
       io.to(roomId).emit("message", message);
 
