@@ -66,16 +66,3 @@ export async function getMessagesByRoom(
   return data || [];
 }
 
-export async function deleteMessage(messageId: string): Promise<boolean> {
-  const { error } = await supabase
-    .from("messages")
-    .delete()
-    .eq("id", messageId);
-
-  if (error) {
-    console.error("Error deleting message:", error);
-    return false;
-  }
-
-  return true;
-}

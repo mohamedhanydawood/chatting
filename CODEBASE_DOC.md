@@ -9,18 +9,26 @@ This document provides clear, line-by-line explanations for all major files in t
 
 ## Team Assignments
 
-| File/Section                  | Team Member |
-|-------------------------------|-------------|
-| components/Calculator.tsx     | rageh       |
-| components/ChatInput.tsx      | hany        |
-| components/ChatWindow.tsx     | araky       |
-| components/ChatSidebar.tsx    | hamdy       |
-| components/ChatRoom.tsx       | hazem       |
-| components/Chat.tsx           | tahoun      |
-| lib/supabase.ts               | shawky      |
-| app/page.tsx                  | rageh       |
-| server.ts                     | shawky      |
-| Documentation & Code Quality  | tahoun      |
+hany -> import usage and initialize app and create memory and prepare the app 
+and create server and create socket io instance and handle connection event, page.tsx
+
+tahoun -> send_dm ,save_message 
+
+shawky -> register_user ,getMessagesByRoom
+
+rageh -> join_room, ChatRoom.tsx
+
+hamdy -> send_message, ChatSidebar.tsx
+
+hazem -> load_dm_history, ChatWindow.tsx
+
+araky -> calc, Calculator.tsx
+
+ziad -> disconnect ,ChatInput.tsx
+
+
+
+
 
 ---
 

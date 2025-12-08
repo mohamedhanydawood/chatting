@@ -180,8 +180,6 @@ export default function Calculator({ isOpen, onClose, onCalculate }: CalculatorP
           </button>
         </div>
 
-        {/* Send Button */}
-
       </div>
     </div>
   );
